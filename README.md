@@ -1,7 +1,9 @@
-# Westward — hexcrawl tables in SQLite
+# Westward — a hexcrawl generator in SQLite
 
-A relational database of the r/BehindTheTables random-table corpus, built to
-generate hexcrawl content: enter a hex, roll on the tables that belong there.
+A wilderness hexcrawl generator built on the r/BehindTheTables random-table
+corpus. Walk hex to hex; each one rolls something from the tables that belong
+there. The whole thing is a static page — SQLite runs in your browser via
+WebAssembly, so there is no server, no API, and no build step.
 
 The point of the project is as much SQL practice as it is the app. The
 interesting work was never the scraping — it was deciding how to model
@@ -12,30 +14,76 @@ with the model.
 
 | path | what it is |
 |---|---|
-| `schema.sql` | the six-table schema, with the reasoning for each decision in comments |
-| `import_btt.py` | parses `btt/*.json` into the database; re-runnable |
-| `near_hex.sql` | "what did the authors say goes with this hex?" |
-| `btt/` | 246 source JSON files (the BehindTheTables corpus) |
-| `hexcrawl.db` | the built database, ~1.9 MB |
-| `backup_pre_import_2026-08-25/` | pre-import schema and DB snapshots |
+| `index.html` | the page: markup, styles, render loop |
+| `app.js` | the generator; every tunable number is at the top |
+| `hexcrawl.db.gz` | the shipped artifact, 855 KB (44% of raw) |
+| `build_db.sh` | vacuum + gzip — **run after any data change** |
+| `schema.sql` | the six-table schema, reasoning for each decision in comments |
+| `queries/near_hex.sql` | debugging tool, not app code — "why is that page linked to a swamp?" |
+| `hexcrawl.db` | the built database, 1.9 MB |
+| `import/import_btt.py` | parses the corpus into the database; re-runnable |
+| `import/btt/` | 246 source JSON files |
 
-## Rebuild from scratch
+## Running it
+
+```sh
+python3 -m http.server        # then open localhost:8000
+```
+
+It must be *served*, not opened as a file — ES module imports and `fetch`
+don't work over `file://`. The page tells you so if you try.
+
+## Deploying
+
+GitHub Pages: push, then Settings → Pages → deploy from branch. No
+configuration. Everything is static; the only external request is the sql.js
+WASM binary from jsDelivr (322 KB, brotli). First load is ~1.2 MB total and
+cached after; every roll thereafter is local and works offline.
+
+## Rebuilding the data
 
 ```sh
 rm -f hexcrawl.db
 sqlite3 hexcrawl.db < schema.sql
-python3 import_btt.py          # ~0.25s
+python3 import/import_btt.py      # ~0.25s
+./build_db.sh                     # regenerate the .gz the site serves
 ```
 
 The importer clears existing rows first, so re-running is safe. It prints a
 verification report: row counts, tree depth, attribution coverage, and every
 anomaly it skipped or noticed.
 
-Query it:
+Don't skip `build_db.sh`. The site serves `hexcrawl.db.gz`, not `hexcrawl.db`
+— miss it and the page keeps serving the previous data with no error anywhere.
 
-```sh
-sqlite3 -box hexcrawl.db < near_hex.sql
+## The generator
+
 ```
+Biome        weighted pick from 15 wilderness pages (weights total 23)
+             single-word places count double: Forest 2, Haunted Forest 1
+Next hex     50% repeats the previous biome, else re-roll the weighted pick
+Content      60% a prompt from the biome page
+             30% a prompt from a page the authors linked to it
+             10% a prompt from any page in the corpus
+Monsters     ~30%, emergent — see below
+```
+
+All four numbers are constants at the top of `app.js`.
+
+Measured over 20,000 generated hexes: origins 60.2 / 30.2 / 9.6, monsters
+29.9%, every biome within 0.5% of its weight.
+
+**Monsters are not special-cased, and that was the whole trick.** The
+requirement was "roughly a third." Plain 60/30/10 already delivers 29.5%,
+because these authors linked monsters to wilderness constantly — Cavern's
+neighbours are 52% Monsters, Mountains 50%, Forest 41%. Adding an explicit
+25% monster roll on top would have produced 47%. The simplest possible rule
+was already correct; the work was measuring that rather than assuming it.
+
+**Repeat-biome measures 53.7%, not 50%, and that's right.** On a re-roll the
+weighted pick can land on the same biome again, adding `0.5 × 7.4%`. The
+source book's d10 behaves identically. To force exactly 50%, exclude the
+current biome from the re-roll.
 
 ## Schema
 
@@ -87,8 +135,9 @@ data before building the table.
 that page A listed page B, and only **34.5% of links are reciprocated** — the
 authors linked whichever direction occurred to them. Forest lists 12 pages; 33
 other pages list Forest. Traversing arrows as stored misses Bears, Wolves, and
-Spiders. `near_hex.sql` unions the edge list with its own reverse. Whether a
-graph is directed is a fact about your question, not about your table.
+Spiders. Both `queries/near_hex.sql` and the generator union the edge list with
+its own reverse. Whether a graph is directed is a fact about your question, not about
+your table.
 
 **One hop, no inference.** An earlier version walked N hops with a recursive
 CTE. Depth 2 reaches 112 more pages and depth 3 reaches 226 of 246 — at which
@@ -97,27 +146,58 @@ filtering: every link is a human author's explicit judgment, nothing is
 inferred, and the rule fits in a sentence. That also removed the recursion —
 a fixed known depth is a JOIN; recursion is for when you don't know the depth.
 
+**The entry-point filter was built, then removed.** Biome pages mix prompts
+that read as openings (*"Encounters: You come upon..."*) with prompts that
+read as follow-ups (*"Who lives in the peculiar cottage?"*), and the authors
+happened to phrase the latter as questions — so `WHERE name NOT LIKE '%?'`
+separated them for free. It shipped, then the 84 question-prompts were
+actually read: every one names its own subject, so every one stands alone.
+The filter was suppressing good material to prevent a problem that doesn't
+exist. Removing it roughly triples the eligible prompts on the
+`What's in the...` pages (Desert 9 → 22) and leaves the `Quick` pages
+untouched, since their authors never used question phrasing.
+
+That's the third time this project built a defensible thing for data it
+hadn't finished reading — after `result_refs` and the recursive CTE. The
+pattern is consistent enough to be worth naming: **look at all of the data
+before writing the rule, not a sample of it.**
+
+**The `.gz` is byte-sniffed, not header-driven.** Some hosts send a `.gz` with
+`Content-Encoding: gzip`, so the browser inflates it before your code sees a
+byte; others (verified: `python -m http.server`) don't. Decompressing
+unconditionally breaks on the first, not decompressing breaks on the second,
+and which you get depends on the host — so you'd find out only after
+deploying. `app.js` checks for the gzip magic bytes `1f 8b` and inflates only
+if needed, then asserts the result begins `SQLite format 3`.
+
 ## Data quirks that will bite
 
 - **9 prompts have a printed die label that contradicts their own entries** —
   `Graverobbers` says `d6` but has 8 entries numbered 1–8. The importer lists
   them. The entries are right; the label is a typo. Deriving the die size
   gives the correct answer where storing it would have imported the lie.
+- **6 prompts have uncovered die faces** (one d20 skips 11–16) and 6 have
+  overlapping ranges. Not worth "fixing" — it's how the authors wrote it. A
+  roll landing in a hole falls back to a random entry, flagged in the UI.
 - **Category names are not unique.** 25 names repeat. Worse, there are two
   genuinely different pages named `Dragons` (ids 324 and 572, different
   Reddit threads). Seeding a query on a name silently merges them — seed on
   `id` when the name is ambiguous.
 - **Most prompts are attribute tables, not content tables.** `Bears` gives you
-  *"Color: The bear's fur is..."*, not *"you meet a bear."* When a linked page
-  is chosen as an encounter, the **page title is the headline and its prompts
-  are the detail** — otherwise you generate a stray adjective with no subject.
-- **Hex pages mix entry points and follow-ups.** Across the nine
-  `What's in the...` pages: 55 entry prompts, 78 follow-ups.
-  *"Who resides in the abandoned cabin now?"* presupposes a cabin. Filtering
-  with `WHERE name NOT LIKE '%?'` separates them, with about one leak in
-  eleven (*"The temple was built to honor..."*).
+  *"Color: The bear's fur is..."*, not *"you meet a bear."* The UI prints the
+  source page name alongside the result for exactly this reason — otherwise a
+  linked roll reads as a stray adjective with no subject.
+- **Follow-up prompts are self-contained, which is why there's no filter.**
+  Roughly 40% of biome prompts are phrased as questions (*"Who resides in the
+  abandoned cabin now?"*) and look like they presuppose an earlier roll. All
+  84 were read: **every one names its own subject.** No bare pronouns, no
+  dangling references. So prompt + result stands alone — *"Who is in the
+  ancient burial mound? The remains of an ancient war chief"* means this hex
+  has a burial mound with a war chief in it. See the design note below.
 - **8 links point at pages not in this corpus** and are skipped by the
   importer, which lists them by name.
+- **183 prompt names use a curly apostrophe (U+2019)** while page titles use
+  ASCII `'`. Any regex over names needs `['’]`.
 
 ## Attribution
 
@@ -154,15 +234,8 @@ is Apache-2.0; the table text is not covered by that licence. Fine for a
 personal project — credit the authors if this ever goes public. This is
 etiquette, not legal advice.
 
-## Where it's going
+## Open items
 
-Hex generation, roughly:
-
-1. Enter a hex (e.g. `What's in the Forest?`).
-2. Some % chance: roll one of that page's **entry** prompts.
-3. Otherwise: pick a linked page, use its title as the encounter, and roll
-   2–3 of its prompts as detail.
-
-Open questions: the home/linked percentage split, how many attributes to roll
-on a linked page, and whether the entry/follow-up distinction should become a
-real column instead of a `LIKE '%?'` heuristic.
+- Hills has no page anywhere in the corpus, so it isn't one of the 15 biomes.
+- Deserts total 17.4% of hexes (three desert pages). Fine for a continent,
+  odd for a temperate map — one weight to change if it grates.

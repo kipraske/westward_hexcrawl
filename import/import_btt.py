@@ -26,8 +26,13 @@ import re
 import sqlite3
 import sys
 
-DB_PATH   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hexcrawl.db")
-JSON_GLOB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "btt", "table_*.json")
+# This script lives in import/ but the database belongs at the project root,
+# next to index.html, because that is what the site serves. Both paths are
+# derived from __file__ rather than the working directory, so the script
+# behaves the same whether you run it from here or from the project root.
+HERE      = os.path.dirname(os.path.abspath(__file__))
+DB_PATH   = os.path.normpath(os.path.join(HERE, os.pardir, "hexcrawl.db"))
+JSON_GLOB = os.path.join(HERE, "btt", "table_*.json")
 
 
 # ──────────────────────────────────────────────────────────────────────────

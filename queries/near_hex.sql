@@ -3,7 +3,13 @@
 
 -- near_hex.sql — "what did the authors say goes with this hex?"
 --
---     sqlite3 -box hexcrawl.db < near_hex.sql
+--     sqlite3 -box hexcrawl.db < queries/near_hex.sql   (from the project root)
+--
+-- Not used by the app. app.js does its own one-hop traversal in linkedPages().
+-- This is the tool for interrogating that traversal by hand: when a generated
+-- hex serves you something baffling, this answers "why is that page linked to
+-- a swamp?" with content counts attached. It's also where the full reasoning
+-- behind treating the link graph as undirected is written out.
 --
 -- Direct, human-authored links only. One hop, no inference.
 -- To ask about a different hex, edit the seed CTE (marked EDIT ME).

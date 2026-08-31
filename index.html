@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Westward — a hexcrawl generator</title>
+<style>
+  :root {
+    --bg:#14120e; --card:#1e1b16; --line:#332e25;
+    --ink:#e8e2d4; --dim:#9a9083; --accent:#c9a227; --accent-dim:#7a6a3a;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; padding:2rem 1rem 4rem;
+    background:var(--bg); color:var(--ink);
+    font:16px/1.6 ui-serif, Georgia, "Times New Roman", serif;
+  }
+  main { max-width:44rem; margin:0 auto; }
+  h1 { font-size:1.6rem; letter-spacing:.04em; margin:0 0 .2rem; font-weight:600; }
+  .sub { color:var(--dim); font-size:.85rem; margin:0 0 1.6rem; font-style:italic; }
+
+  .controls { display:flex; gap:.6rem; margin-bottom:1.6rem; flex-wrap:wrap; }
+  button {
+    font:inherit; font-size:.9rem; padding:.5rem 1.1rem; cursor:pointer;
+    background:var(--accent); color:#1a1712; border:none; border-radius:2px;
+    letter-spacing:.03em;
+  }
+  button.ghost { background:transparent; color:var(--dim); border:1px solid var(--line); }
+  button:disabled { opacity:.4; cursor:default; }
+  button:not(:disabled):hover { filter:brightness(1.12); }
+
+  .hex {
+    background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent-dim);
+    border-radius:2px; padding:1rem 1.1rem; margin-bottom:.9rem;
+  }
+  .hex.linked    { border-left-color:#5f7a4a; }
+  .hex.elsewhere { border-left-color:#7a4a5f; }
+
+  .head { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .biome { font-size:1.05rem; font-weight:600; letter-spacing:.02em; }
+  .meta  { color:var(--dim); font-size:.72rem; text-align:right; white-space:nowrap;
+           font-family:ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .tag   { display:inline-block; font-size:.66rem; text-transform:uppercase;
+           letter-spacing:.09em; padding:.08rem .4rem; border:1px solid var(--line);
+           border-radius:2px; color:var(--dim); margin-right:.35rem; }
+  .body  { margin-top:.6rem; }
+  .stem  { color:var(--dim); font-style:italic; }
+  .text  { }
+  .src   { margin-top:.5rem; font-size:.78rem; color:var(--dim); }
+  .gap   { color:#b0763f; font-size:.72rem; margin-left:.4rem; }
+
+  #status { color:var(--dim); font-style:italic; }
+  #status.error { color:#c86a5a; font-style:normal; }
+  footer { margin-top:2.5rem; padding-top:1rem; border-top:1px solid var(--line);
+           color:var(--dim); font-size:.75rem; }
+  footer a { color:var(--accent-dim); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Westward</h1>
+  <p class="sub">A wilderness hexcrawl, rolled from the r/BehindTheTables corpus.</p>
+
+  <div class="controls">
+    <button id="next" disabled>Travel onward</button>
+    <button id="reset" class="ghost" disabled>New journey</button>
+  </div>
+
+  <p id="status">Loading the database…</p>
+  <div id="log"></div>
+
+  <footer>
+    Tables written by OrkishBlade and the contributors of
+    <a href="https://www.reddit.com/r/BehindTheTables">r/BehindTheTables</a>.
+    Every result traces back to its source thread.
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-wasm.js"></script>
+<script type="module">
+import { open, makeHex } from './app.js';
+
+const $log = document.getElementById('log');
+const $status = document.getElementById('status');
+const $next = document.getElementById('next');
+const $reset = document.getElementById('reset');
+
+let biomes = null, previous = null, count = 0;
+
+// Page titles are "What's in the Forest?" / "Quick Swamp"; the place is what's
+// inside. Same unwrapping the weighting uses — shown here so the log reads as
+// a journey rather than as a list of table names.
+const placeName = t =>
+  (t.match(/^What['’]s in the (.+?)\?$/) || t.match(/^Quick (.+)$/) || [,t])[1];
+
+// 114 prompts are sentence fragments — "...and...", "...with...", "..." —
+// continuation stems from attribute tables that are meaningless on their own
+// ("...and... Leaves a trail of frost in its wake."). Printing the stem hurts
+// more than omitting it, because the "from <page>" line below already names
+// the subject. Verified safe: zero fragment prompts exist on biome pages, so
+// this only ever fires where that source line is present.
+const isFragment = name => /^[.…]/.test(name.trim());
+
+function render(h) {
+  count++;
+  const el = document.createElement('div');
+  el.className = `hex ${h.origin}`;
+  const tag = { biome:'in the wild', linked:'drawn near', elsewhere:'far afield' }[h.origin];
+  el.innerHTML = `
+    <div class="head">
+      <span class="biome">${count}. ${placeName(h.biome.name)}</span>
+      <span class="meta"><span class="tag">${tag}</span>d${h.roll.die} &rarr; ${h.roll.n}</span>
+    </div>
+    <div class="body">
+      ${isFragment(h.prompt.name) ? '' : `<span class="stem">${h.prompt.name}</span> `}<span class="text">${h.roll.text}</span>
+      ${h.roll.gap ? '<span class="gap">(roll fell in a gap — entry picked at random)</span>' : ''}
+    </div>
+    ${h.origin === 'biome' ? '' : `<div class="src">from <strong>${h.page.name}</strong></div>`}
+  `;
+  $log.appendChild(el);
+  el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+$next.onclick = () => { previous = makeHex(biomes, previous); render(previous); };
+$reset.onclick = () => { $log.innerHTML = ''; previous = null; count = 0; };
+
+try {
+  biomes = await open();
+  $status.textContent =
+    `${biomes.length} biomes ready. Roll onward — 50% chance each hex resembles the last.`;
+  $next.disabled = false;
+  $reset.disabled = false;
+} catch (err) {
+  $status.className = 'error';
+  $status.textContent = `Could not load: ${err.message}. ` +
+    `If you opened this file directly, serve it instead: python3 -m http.server`;
+}
+</script>
+</body>
+</html>
