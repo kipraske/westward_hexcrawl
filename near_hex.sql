@@ -1,3 +1,6 @@
+-- TODO - this will need to be rewritten or deleted as is, but it has documentation
+-- I don't want to lose for now...
+
 -- near_hex.sql — "what did the authors say goes with this hex?"
 --
 --     sqlite3 -box hexcrawl.db < near_hex.sql
