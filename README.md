@@ -10,6 +10,11 @@ interesting work was never the scraping — it was deciding how to model
 tables-that-reference-tables, then discovering where the real data disagreed
 with the model.
 
+As you can likely tell, the second point of this project was to get used to using
+AI developer tools, and to build something at speed, and to find gaps in my knowledge 
+— just look at this README. The agent was Anthropic's Claude Opus 5. This is just a fun 
+little learning project. Take that as you will.
+
 ## What's here
 
 | path | what it is |
@@ -236,6 +241,5 @@ etiquette, not legal advice.
 
 ## Open items
 
-- Hills has no page anywhere in the corpus, so it isn't one of the 15 biomes.
 - Deserts total 17.4% of hexes (three desert pages). Fine for a continent,
   odd for a temperate map — one weight to change if it grates.
