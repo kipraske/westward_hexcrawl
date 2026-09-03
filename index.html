@@ -127,25 +127,26 @@
   .hex.choice.aimed { transform:translate(-50%,-50%) scale(1.07); filter:brightness(1.22); }
 
   /* ── biome art ─────────────────────────────────────────────────────────
-     Placeholders. To use a real image for a biome, replace that one rule's
-     background with `background:url(art/forest.jpg) center/cover;` — nothing
-     in the JS needs to change, the class names are generated from the page
-     titles in map.js.                                                      */
-  .plains                { background:linear-gradient(160deg,#9c8f4e 0%,#7d7a3c 55%,#5d5f2c 100%); }
-  .temperate-grasslands  { background:linear-gradient(160deg,#93a24f 0%,#6f8b3d 60%,#54702f 100%); }
-  .tropical-grassland    { background:linear-gradient(160deg,#b0a63f 0%,#7f9433 60%,#5c7328 100%); }
-  .frozen-lands          { background:linear-gradient(160deg,#cfe0e8 0%,#9dbccd 55%,#6d8ea6 100%); }
-  .swamp                 { background:linear-gradient(160deg,#5d6b3e 0%,#40522f 55%,#2b3a26 100%); }
-  .swamps                { background:linear-gradient(160deg,#4e5c37 0%,#354528 55%,#222f1f 100%); }
-  .cavern                { background:linear-gradient(160deg,#4a4740 0%,#302e2a 55%,#1a1917 100%); }
-  .desert                { background:linear-gradient(160deg,#d9bb7c 0%,#c09a58 55%,#96733c 100%); }
-  .shadowy-desert        { background:linear-gradient(160deg,#8a7f8f 0%,#645a70 55%,#413a4d 100%); }
-  .flame-scorched-desert { background:linear-gradient(160deg,#d98a4a 0%,#b4552c 55%,#7d2f1c 100%); }
-  .forest                { background:linear-gradient(160deg,#4c7a3f 0%,#33592d 55%,#1f3a20 100%); }
-  .enchanted-forest      { background:linear-gradient(160deg,#4fa08a 0%,#3a7a72 50%,#37525f 100%); }
-  .haunted-forest        { background:linear-gradient(160deg,#5a6660 0%,#3b4744 55%,#232c2b 100%); }
-  .jungle                { background:linear-gradient(160deg,#3f8f4a 0%,#256b36 55%,#144424 100%); }
-  .mountains             { background:linear-gradient(160deg,#9aa3ab 0%,#6b7580 55%,#454d57 100%); }
+     Drawn by make_art.py; re-run it after editing a motif. Each tile is
+     200x231 (the √3:2 ratio of a pointy-top hex) so `cover` scales it exactly
+     with no cropping. Swap any one of these for a raster image and nothing
+     else needs to change — the class names come from the page titles via
+     biomeSlug() in map.js.                                                 */
+  .plains                { background:url(art/plains.svg) center/cover; }
+  .temperate-grasslands  { background:url(art/temperate-grasslands.svg) center/cover; }
+  .tropical-grassland    { background:url(art/tropical-grassland.svg) center/cover; }
+  .frozen-lands          { background:url(art/frozen-lands.svg) center/cover; }
+  .swamp                 { background:url(art/swamp.svg) center/cover; }
+  .swamps                { background:url(art/swamps.svg) center/cover; }
+  .cavern                { background:url(art/cavern.svg) center/cover; }
+  .desert                { background:url(art/desert.svg) center/cover; }
+  .shadowy-desert        { background:url(art/shadowy-desert.svg) center/cover; }
+  .flame-scorched-desert { background:url(art/flame-scorched-desert.svg) center/cover; }
+  .forest                { background:url(art/forest.svg) center/cover; }
+  .enchanted-forest      { background:url(art/enchanted-forest.svg) center/cover; }
+  .haunted-forest        { background:url(art/haunted-forest.svg) center/cover; }
+  .jungle                { background:url(art/jungle.svg) center/cover; }
+  .mountains             { background:url(art/mountains.svg) center/cover; }
 
   /* ── the panel ─────────────────────────────────────────────────────── */
   #panel {

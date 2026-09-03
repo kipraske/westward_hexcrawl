@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 231" width="200" height="231" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="g" x1="0" y1="0" x2=".55" y2="1"><stop offset="0" stop-color="#8a7f8f"/><stop offset=".55" stop-color="#645a70"/><stop offset="1" stop-color="#413a4d"/></linearGradient></defs>
+<rect width="200" height="231" fill="url(#g)"/>
+<g fill="none" stroke="#2e2739" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+<path d="M-36.9 16.7 q28.2 -18.8 56.4 -2.3 q30.1 6.0 52.7 11.3"/>
+<path d="M125.2 11.1 q25.3 -16.9 50.7 -2.0 q27.0 5.4 47.3 10.1"/>
+<path d="M20.6 55.2 q26.8 -17.8 53.5 -2.1 q28.5 5.7 49.9 10.7"/>
+<path d="M111.5 84.3 q27.4 -18.3 54.9 -2.2 q29.3 5.9 51.2 11.0"/>
+<path d="M14.7 133.5 q24.9 -16.6 49.8 -2.0 q26.6 5.3 46.5 10.0"/>
+<path d="M122.2 101.7 q28.2 -18.8 56.4 -2.3 q30.1 6.0 52.7 11.3"/>
+<path d="M90.8 154.5 q21.3 -14.2 42.7 -1.7 q22.8 4.6 39.8 8.5"/>
+<path d="M119.2 143.0 q27.4 -18.3 54.9 -2.2 q29.3 5.9 51.2 11.0"/>
+<path d="M15.5 197.2 q23.1 -15.4 46.3 -1.9 q24.7 4.9 43.2 9.3"/>
+<path d="M128.8 214.3 q22.3 -14.8 44.5 -1.8 q23.8 4.8 41.6 8.9"/>
+</g>
+<style>.fill{fill:#2e2739;stroke:none}</style>
+</svg>

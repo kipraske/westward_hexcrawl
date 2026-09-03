@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 231" width="200" height="231" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="g" x1="0" y1="0" x2=".55" y2="1"><stop offset="0" stop-color="#5d6b3e"/><stop offset=".55" stop-color="#40522f"/><stop offset="1" stop-color="#2b3a26"/></linearGradient></defs>
+<rect width="200" height="231" fill="url(#g)"/>
+<g fill="none" stroke="#1d2a1a" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+<path d="M36.4 9.9 q0.3 -14.4 0.8 -26.1"/>
+<path d="M37.2 -16.2 l0 6.8" stroke-width="3.4"/>
+<path d="M67.8 27.4 q1.1 -14.8 2.9 -26.9"/>
+<path d="M70.7 0.5 l0 7.0" stroke-width="3.4"/>
+<path d="M98.3 30.9 q0.8 -13.7 1.9 -24.8"/>
+<path d="M100.2 6.0 l0 6.5" stroke-width="3.4"/>
+<path d="M132.6 31.5 q0.6 -15.4 1.5 -28.1"/>
+<path d="M134.1 3.4 l0 7.3" stroke-width="3.4"/>
+<path d="M192.8 16.1 q1.2 -12.6 3.0 -23.0"/>
+<path d="M195.8 -6.8 l0 6.0" stroke-width="3.4"/>
+<path d="M40.3 47.9 q-1.9 -16.2 -4.7 -29.5"/>
+<path d="M35.5 18.3 l0 7.7" stroke-width="3.4"/>
+<path d="M78.4 43.3 q0.0 -12.8 0.0 -23.3"/>
+<path d="M78.5 20.0 l0 6.1" stroke-width="3.4"/>
+<path d="M115.1 56.0 q-0.2 -16.3 -0.6 -29.7"/>
+<path d="M114.6 26.3 l0 7.7" stroke-width="3.4"/>
+<path d="M168.6 42.0 q-0.5 -16.5 -1.3 -29.9"/>
+<path d="M167.3 12.1 l0 7.8" stroke-width="3.4"/>
+<path d="M198.0 65.2 q2.1 -16.2 5.2 -29.5"/>
+<path d="M203.2 35.7 l0 7.7" stroke-width="3.4"/>
+<path d="M20.0 94.4 q-1.0 -15.2 -2.5 -27.6"/>
+<path d="M17.5 66.8 l0 7.2" stroke-width="3.4"/>
+<path d="M56.1 106.1 q-0.8 -16.6 -1.9 -30.2"/>
+<path d="M54.2 76.0 l0 7.8" stroke-width="3.4"/>
+<path d="M86.6 92.3 q1.4 -14.3 3.4 -25.9"/>
+<path d="M90.0 66.4 l0 6.7" stroke-width="3.4"/>
+<path d="M152.5 105.0 q-0.8 -17.0 -2.0 -30.9"/>
+<path d="M150.5 74.1 l0 8.0" stroke-width="3.4"/>
+<path d="M189.1 80.7 q1.3 -14.9 3.3 -27.1"/>
+<path d="M192.3 53.7 l0 7.0" stroke-width="3.4"/>
+<path d="M24.8 145.8 q-2.2 -15.9 -5.6 -28.9"/>
+<path d="M19.2 116.9 l0 7.5" stroke-width="3.4"/>
+<path d="M77.6 132.3 q0.9 -13.5 2.2 -24.5"/>
+<path d="M79.8 107.8 l0 6.4" stroke-width="3.4"/>
+<path d="M135.3 122.4 q1.7 -12.6 4.2 -22.9"/>
+<path d="M139.5 99.5 l0 6.0" stroke-width="3.4"/>
+<path d="M156.9 149.7 q2.0 -13.9 4.9 -25.3"/>
+<path d="M161.9 124.5 l0 6.6" stroke-width="3.4"/>
+<path d="M207.9 137.8 q1.6 -14.5 4.1 -26.4"/>
+<path d="M212.0 111.4 l0 6.9" stroke-width="3.4"/>
+<path d="M6.0 176.3 q0.5 -15.7 1.1 -28.6"/>
+<path d="M7.1 147.7 l0 7.4" stroke-width="3.4"/>
+<path d="M44.7 179.0 q1.1 -15.0 2.9 -27.2"/>
+<path d="M47.6 151.8 l0 7.1" stroke-width="3.4"/>
+<path d="M107.4 170.5 q0.6 -16.9 1.6 -30.7"/>
+<path d="M109.0 139.8 l0 8.0" stroke-width="3.4"/>
+<path d="M125.8 165.9 q0.1 -12.9 0.2 -23.5"/>
+<path d="M126.0 142.4 l0 6.1" stroke-width="3.4"/>
+<path d="M193.8 188.5 q1.3 -14.2 3.3 -25.8"/>
+<path d="M197.0 162.7 l0 6.7" stroke-width="3.4"/>
+<path d="M39.2 220.8 q-0.6 -13.5 -1.6 -24.6"/>
+<path d="M37.6 196.2 l0 6.4" stroke-width="3.4"/>
+<path d="M65.5 206.9 q0.8 -15.5 2.0 -28.1"/>
+<path d="M67.5 178.8 l0 7.3" stroke-width="3.4"/>
+<path d="M135.9 199.1 q-1.7 -14.3 -4.2 -26.1"/>
+<path d="M131.7 173.0 l0 6.8" stroke-width="3.4"/>
+<path d="M145.1 197.7 q0.2 -14.1 0.6 -25.7"/>
+<path d="M145.7 172.0 l0 6.7" stroke-width="3.4"/>
+<path d="M204.6 219.1 q0.9 -15.9 2.1 -28.9"/>
+<path d="M206.7 190.2 l0 7.5" stroke-width="3.4"/>
+</g>
+<g fill="none" stroke="#1d2a1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.4">
+<path d="M17.4 7.0 q8.7 -5.6 17.4 0 q8.7 5.6 17.4 0"/>
+<path d="M76.3 22.7 q9.8 -6.3 19.7 0 q9.8 6.3 19.7 0"/>
+<path d="M156.4 23.9 q7.7 -4.9 15.4 0 q7.7 4.9 15.4 0"/>
+<path d="M45.7 52.7 q7.3 -4.7 14.7 0 q7.3 4.7 14.7 0"/>
+<path d="M98.9 66.1 q8.6 -5.5 17.2 0 q8.6 5.5 17.2 0"/>
+<path d="M168.7 50.4 q8.6 -5.5 17.1 0 q8.6 5.5 17.1 0"/>
+<path d="M-3.8 113.9 q9.2 -5.9 18.4 0 q9.2 5.9 18.4 0"/>
+<path d="M62.9 107.3 q8.2 -5.3 16.5 0 q8.2 5.3 16.5 0"/>
+<path d="M122.5 107.1 q8.7 -5.5 17.3 0 q8.7 5.5 17.3 0"/>
+<path d="M57.0 159.0 q8.0 -5.2 16.1 0 q8.0 5.2 16.1 0"/>
+<path d="M115.8 171.1 q9.7 -6.2 19.5 0 q9.7 6.2 19.5 0"/>
+<path d="M169.9 181.1 q9.9 -6.3 19.8 0 q9.9 6.3 19.8 0"/>
+<path d="M-11.4 210.6 q9.2 -5.9 18.4 0 q9.2 5.9 18.4 0"/>
+<path d="M108.9 201.9 q8.1 -5.2 16.2 0 q8.1 5.2 16.2 0"/>
+<path d="M160.2 193.2 q8.1 -5.2 16.2 0 q8.1 5.2 16.2 0"/>
+</g>
+<style>.fill{fill:#1d2a1a;stroke:none}</style>
+</svg>

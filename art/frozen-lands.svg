@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 231" width="200" height="231" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="g" x1="0" y1="0" x2=".55" y2="1"><stop offset="0" stop-color="#cfe0e8"/><stop offset=".55" stop-color="#9dbccd"/><stop offset="1" stop-color="#6d8ea6"/></linearGradient></defs>
+<rect width="200" height="231" fill="url(#g)"/>
+<g fill="none" stroke="#4a6d84" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" opacity="0.45">
+<path d="M41.9 -6.0 L52.2 19.8 L41.9 27.0 L31.6 19.8 Z"/>
+<path d="M90.5 16.2 L98.4 35.9 L90.5 41.4 L82.6 35.9 Z"/>
+<path d="M115.4 8.3 L123.8 29.3 L115.4 35.2 L107.0 29.3 Z"/>
+<path d="M170.7 13.2 L180.9 38.6 L170.7 45.7 L160.5 38.6 Z"/>
+<path d="M35.8 46.1 L44.3 67.3 L35.8 73.3 L27.3 67.3 Z"/>
+<path d="M79.1 62.0 L89.2 87.3 L79.1 94.3 L69.0 87.3 Z"/>
+<path d="M160.6 43.9 L167.7 61.5 L160.6 66.5 L153.6 61.5 Z"/>
+<path d="M191.3 47.5 L199.8 68.8 L191.3 74.8 L182.8 68.8 Z"/>
+<path d="M41.3 104.0 L49.6 124.7 L41.3 130.5 L33.0 124.7 Z"/>
+<path d="M81.0 113.1 L88.7 132.3 L81.0 137.7 L73.3 132.3 Z"/>
+<path d="M136.8 76.9 L145.7 99.2 L136.8 105.4 L127.9 99.2 Z"/>
+<path d="M189.4 75.5 L198.9 99.3 L189.4 106.0 L179.9 99.3 Z"/>
+<path d="M63.2 128.2 L69.7 144.6 L63.2 149.2 L56.6 144.6 Z"/>
+<path d="M120.5 149.3 L129.9 172.7 L120.5 179.3 L111.1 172.7 Z"/>
+<path d="M151.4 132.2 L158.4 149.7 L151.4 154.6 L144.4 149.7 Z"/>
+<path d="M180.5 154.6 L189.8 178.1 L180.5 184.6 L171.1 178.1 Z"/>
+<path d="M16.6 198.8 L24.5 218.6 L16.6 224.1 L8.7 218.6 Z"/>
+<path d="M55.4 189.7 L65.0 213.7 L55.4 220.4 L45.8 213.7 Z"/>
+<path d="M133.3 204.3 L141.1 223.8 L133.3 229.3 L125.5 223.8 Z"/>
+<path d="M172.1 181.0 L182.4 206.7 L172.1 214.0 L161.8 206.7 Z"/>
+</g>
+<g fill="none" stroke="#4a6d84" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" opacity="0.35">
+<path d="M-37.5 6.4 q26.3 -17.5 52.6 -2.1 q28.1 5.6 49.1 10.5"/>
+<path d="M65.2 20.9 q22.2 -14.8 44.3 -1.8 q23.6 4.7 41.4 8.9"/>
+<path d="M41.0 73.1 q23.9 -15.9 47.7 -1.9 q25.5 5.1 44.6 9.5"/>
+<path d="M156.1 101.4 q25.3 -16.8 50.5 -2.0 q26.9 5.4 47.1 10.1"/>
+<path d="M18.2 121.9 q22.9 -15.3 45.8 -1.8 q24.4 4.9 42.7 9.2"/>
+<path d="M114.7 143.1 q22.7 -15.2 45.5 -1.8 q24.3 4.9 42.4 9.1"/>
+<path d="M41.1 183.5 q19.7 -13.2 39.5 -1.6 q21.1 4.2 36.9 7.9"/>
+<path d="M159.7 189.1 q21.2 -14.1 42.3 -1.7 q22.6 4.5 39.5 8.5"/>
+</g>
+<style>.fill{fill:#4a6d84;stroke:none}</style>
+</svg>

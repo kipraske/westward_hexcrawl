@@ -22,6 +22,8 @@ little learning project. Take that as you will.
 | `index.html` | the page: markup, biome art, panel |
 | `app.js` | the generator; every tunable number is at the top |
 | `map.js` | hex geometry, rendering, travel |
+| `make_art.py` | draws the 15 biome tiles; re-run after editing a motif |
+| `art/*.svg` | the tiles, 59 KB for all fifteen |
 | `hexcrawl.db.gz` | the shipped artifact, 855 KB (44% of raw) |
 | `build_db.sh` | vacuum + gzip — **run after any data change** |
 | `schema.sql` | the six-table schema, reasoning for each decision in comments |
@@ -183,6 +185,18 @@ step away, so it's simply re-offered. Only hexes you *entered* are excluded,
 and they're unreachable anyway — westward progress `-(q + r/2)` rises by 1 on
 a W move and 1/2 on NW/SW, so a route can never fold back on itself. Verified
 at 3 choices for 200 consecutive moves.
+
+**Biome art is generated, not downloaded.** Fifteen raster tiles would have
+added several hundred KB to a project budgeted at 855 KB, plus a second
+licence and attribution chain on top of BehindTheTables. And "simple and
+drawn" *is* line art, which is what SVG natively is — so `make_art.py` draws
+them: pines, grass tufts, dunes, reeds, ridged peaks, ice shards, dead trees.
+All fifteen come to **59 KB**. Each biome seeds its RNG from its own name, so
+re-running produces byte-identical files and a regenerate doesn't churn the
+diff. Motifs sit on a jittered, row-offset grid rather than at random points —
+pure random placement clumps and leaves holes, which reads as noise rather
+than terrain. Tiles are 200×231, the √3:2 ratio of a pointy-top hex, so
+`background-size:cover` fits them exactly with no cropping.
 
 **Culling is measured in pixels, not moves.** The trail grew unbounded — 472
 tiles after 200 moves. Tiles far enough behind are now dropped, but the
