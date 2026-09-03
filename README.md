@@ -19,8 +19,9 @@ little learning project. Take that as you will.
 
 | path | what it is |
 |---|---|
-| `index.html` | the page: markup, styles, render loop |
+| `index.html` | the page: markup, biome art, panel |
 | `app.js` | the generator; every tunable number is at the top |
+| `map.js` | hex geometry, rendering, travel |
 | `hexcrawl.db.gz` | the shipped artifact, 855 KB (44% of raw) |
 | `build_db.sh` | vacuum + gzip — **run after any data change** |
 | `schema.sql` | the six-table schema, reasoning for each decision in comments |
@@ -166,6 +167,22 @@ That's the third time this project built a defensible thing for data it
 hadn't finished reading — after `result_refs` and the recursive CTE. The
 pattern is consistent enough to be worth naming: **look at all of the data
 before writing the rule, not a sample of it.**
+
+**Pointy-top hexes, forced by the layout.** A flat-top hex has neighbours at
+N/NE/SE/S/SW/NW — there is *no* due-west one. The board offers "west, above
+it, below it", which is pointy-top's W / NW / SW triple, so the tile shape
+follows from the interaction rather than from taste.
+
+**Two of the three choices are usually re-offered, not new.** From any hex the
+offers are NW(0,-1), W(-1,0), SW(-1,+1). Move NW and your new SW cell *is* the
+W hex you just declined; move SW and the new NW cell is that same hex. Two
+moves in three collide, so the first version — skip occupied cells — gave the
+player only two options on 21 of 40 test steps. The fix isn't generating
+elsewhere: a hex you were offered and declined is still unexplored terrain one
+step away, so it's simply re-offered. Only hexes you *entered* are excluded,
+and they're unreachable anyway — westward progress `-(q + r/2)` rises by 1 on
+a W move and 1/2 on NW/SW, so a route can never fold back on itself. Verified
+at 3 choices for 200 consecutive moves.
 
 **The `.gz` is byte-sniffed, not header-driven.** Some hosts send a `.gz` with
 `Content-Encoding: gzip`, so the browser inflates it before your code sees a
