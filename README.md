@@ -184,6 +184,16 @@ and they're unreachable anyway — westward progress `-(q + r/2)` rises by 1 on
 a W move and 1/2 on NW/SW, so a route can never fold back on itself. Verified
 at 3 choices for 200 consecutive moves.
 
+**Culling is measured in pixels, not moves.** The trail grew unbounded — 472
+tiles after 200 moves. Tiles far enough behind are now dropped, but the
+threshold can't be a move count: a W move advances 107px and an NW/SW move
+only 54px, so counting moves would cull at wildly different visual distances
+depending on how the player wandered. Nor can it be a fixed pixel figure. With
+the current hex centred, a 1280px viewport shows 6 hexes behind the player but
+a 3440px ultrawide shows 16 — a flat 10-hex cull would delete tiles in plain
+sight. The limit is `max(10 hexes, half the viewport + 3 hexes)`, verified at
+1280/2560/3440px to keep 43–75 tiles with nothing removed on screen.
+
 **The `.gz` is byte-sniffed, not header-driven.** Some hosts send a `.gz` with
 `Content-Encoding: gzip`, so the browser inflates it before your code sees a
 byte; others (verified: `python -m http.server`) don't. Decompressing

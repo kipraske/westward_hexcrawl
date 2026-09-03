@@ -62,8 +62,12 @@
   .hex.choice:hover  { transform:translate(-50%,-50%) scale(1.07); filter:brightness(1.18); }
   .hex.choice:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
   .hex.current { filter:brightness(1.1) saturate(1.15); z-index:2; }
-  .hex.visited { filter:grayscale(.55) brightness(.5); opacity:.55; z-index:0; }
-  .hex.visited .label { opacity:.6; }
+  /* Dimmed enough to read as "already passed", bright enough to still see the
+     terrain. The previous values stacked grayscale(.55), brightness(.5) AND
+     opacity(.55), which multiply out to roughly 27% effective luminance — the
+     hex went nearly black. Two gentler knobs instead of three harsh ones. */
+  .hex.visited { filter:grayscale(.3) brightness(.82); opacity:.85; z-index:0; }
+  .hex.visited .label { opacity:.75; }
 
   /* ── biome art ─────────────────────────────────────────────────────────
      Placeholders. To use a real image for a biome, replace that one rule's

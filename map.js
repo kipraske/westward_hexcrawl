@@ -20,6 +20,11 @@ const HEX_H = 2 * SIZE;
 // Axial coordinates (q, r). Storing axial rather than pixel positions means
 // adjacency is integer arithmetic — no floating-point "is this the same hex?"
 // comparisons, and the occupancy map can key on a plain "q,r" string.
+// How much of the trail to keep behind the player. This is a floor, not the
+// whole rule — see cull(). Ten hexes is comfortable on a laptop; the viewport
+// check is what stops an ultrawide monitor watching tiles blink out.
+const CULL_BEHIND = 10;
+
 const DIRECTIONS = [
     { key: 'NW', q:  0, r: -1 },
     { key: 'W',  q: -1, r:  0 },
@@ -107,6 +112,7 @@ function travelTo(tile) {
     describe(tile.hex);
     offerChoices();
     centreOn(tile);
+    cull();
 }
 
 // Always three choices — but two of them are often hexes that already exist.
@@ -138,13 +144,44 @@ function offerChoices() {
     }
 }
 
-// Slide the map so the current hex sits at a fixed spot on screen — right of
-// centre, because travel runs westward and the space that matters is ahead.
+// Slide the map so the current hex sits dead centre. Half the screen then
+// shows the route behind you and half the choices ahead.
 function centreOn(tile) {
     const { x, y } = axialToPixel(tile.q, tile.r);
-    const anchorX = $map.parentElement.clientWidth  * 0.68;
+    const anchorX = $map.parentElement.clientWidth  * 0.5;
     const anchorY = $map.parentElement.clientHeight * 0.45;
     $map.style.transform = `translate(${anchorX - x}px, ${anchorY - y}px)`;
+}
+
+// Drop tiles far enough behind that nobody can see them go.
+//
+// Distance is measured in pixels along x rather than in moves, because a W
+// move advances 107px and an NW/SW move only 54px — counting moves would cull
+// at wildly different visual distances depending on how the player wandered.
+//
+// The threshold is the LARGER of CULL_BEHIND hexes and half the viewport plus
+// three hexes of slack. A fixed count is fine at 1280px (6 hexes visible
+// behind) but wrong at 3440px, where 16 are visible and a 10-hex cull would
+// delete tiles in plain sight.
+//
+// Only tiles behind the player are considered: travel strictly increases
+// westward progress, so anything with a larger x is in the past and can never
+// be offered again.
+function cull() {
+    const here = axialToPixel(current.q, current.r).x;
+    const margin = $map.parentElement.clientWidth / 2 + 3 * HEX_W;
+    const limit = Math.max(CULL_BEHIND * HEX_W, margin);
+
+    for (const [cellKey, tile] of occupied) {
+        if (tile === current) continue;
+        if (axialToPixel(tile.q, tile.r).x - here <= limit) continue;
+        occupied.delete(cellKey);
+        // Fade rather than yanking the node. They're off-screen by
+        // construction, so this only matters if the maths above is ever wrong
+        // — in which case a fade looks like a fade and a yank looks like a bug.
+        tile.el.classList.remove('in');
+        setTimeout(() => tile.el.remove(), 500);
+    }
 }
 
 // ── the panel ───────────────────────────────────────────────────────────
