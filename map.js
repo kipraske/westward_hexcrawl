@@ -31,6 +31,12 @@ const DIRECTIONS = [
     { key: 'SW', q: -1, r: +1 },
 ];
 
+// How long the marker gets to move before the camera follows it. Without a
+// stagger the pawn glides to the next hex while the map slides the opposite
+// way to re-centre, the two cancel exactly, and the pawn appears bolted to the
+// middle of the screen. Letting it arrive first is what sells the step.
+const MARKER_LEAD = 240;
+
 const axialToPixel = (q, r) => ({
     x: SIZE * Math.sqrt(3) * (q + r / 2),
     y: SIZE * 1.5 * r,
@@ -60,6 +66,96 @@ const key = (q, r) => `${q},${r}`;
 
 const $map   = document.getElementById('map');
 const $panel = document.getElementById('panel');
+
+// Both markers exist at all times; CSS shows whichever the current mode calls
+// for. Keeping them live means switching modes is a class flip with no
+// re-render and no state to rebuild.
+let $pawn = null, $ring = null;
+let $arrows = [];
+
+const PAWN_SVG = `<svg viewBox="0 0 100 132" aria-hidden="true">
+  <defs>
+    <g id="pawn-shape">
+      <circle cx="50" cy="25" r="18"/>
+      <path d="M38 36 C38 44 36 48 34 54 L66 54 C64 48 62 44 62 36 Z"/>
+      <ellipse cx="50" cy="54" rx="23" ry="7.5"/>
+      <path d="M38 56 C38 72 33 87 29 101 L71 101 C67 87 62 72 62 56 Z"/>
+      <path d="M30 99 C26 107 18 114 13 125 L87 125 C82 114 74 107 70 99 Z"/>
+    </g>
+  </defs>
+  <!-- Five parts, each deliberately OVERLAPPING the next: head 7-43, neck
+       36-54, collar 46-61, trunk 56-101, base 99-125. The first attempt had a
+       2px gap between head and collar and no neck at all — since a circle's
+       width at its lowest point is zero, the ball simply floated above the
+       disc. Overlap is what makes the five shapes read as one silhouette.
+
+       Drawn twice: a heavily stroked dark copy underneath gives a uniform
+       outline around the union, then a light copy on top. Stroking each shape
+       separately would show the internal seams. The outline is needed because
+       biome tiles run from near-black (Cavern) to pale blue (Frozen Lands) —
+       no single fill colour reads on both. -->
+  <use href="#pawn-shape" fill="#221b13" stroke="#221b13" stroke-width="9" stroke-linejoin="round"/>
+  <use href="#pawn-shape" fill="#f4ecd8"/>
+</svg>`;
+
+function makeMarkers() {
+    $pawn = document.createElement('div');
+    $pawn.className = 'pawn';
+    $pawn.innerHTML = PAWN_SVG;
+    $ring = document.createElement('div');
+    $ring.className = 'ring';
+    $map.appendChild($ring);
+    $map.appendChild($pawn);
+}
+
+function moveMarker(tile) {
+    const { x, y } = axialToPixel(tile.q, tile.r);
+    for (const el of [$pawn, $ring]) {
+        el.style.left = `${x}px`;
+        el.style.top  = `${y}px`;
+        el.classList.add('placed');
+    }
+}
+
+// One arrow per available choice, sitting just outside the current hex and
+// rotated to point at its target. All three neighbours are the same distance
+// away — that's a property of a hex grid, so a single offset works for each.
+function renderArrows() {
+    $arrows.forEach(a => a.remove());
+    $arrows = [];
+    const from = axialToPixel(current.q, current.r);
+
+    for (const dir of DIRECTIONS) {
+        const target = occupied.get(key(current.q + dir.q, current.r + dir.r));
+        if (!target || target.role !== 'choice') continue;
+
+        const to = axialToPixel(target.q, target.r);
+        const dx = to.x - from.x, dy = to.y - from.y;
+        const angle = Math.round(Math.atan2(dy, dx) * 180 / Math.PI * 100) / 100;
+        const reach = 0.56;              // just past the hex edge (inradius is .5)
+
+        const a = document.createElement('button');
+        a.type = 'button';
+        a.className = 'arrow';
+        a.style.left = `${from.x + dx * reach}px`;
+        a.style.top  = `${from.y + dy * reach}px`;
+        a.style.setProperty('--angle', `${angle}deg`);
+        a.innerHTML = '<svg viewBox="0 0 20 14" aria-hidden="true">' +
+            '<path class="halo" d="M2 7h11M13 7l-4.5-4.5M13 7l-4.5 4.5"/>' +
+            '<path class="line" d="M2 7h11M13 7l-4.5-4.5M13 7l-4.5 4.5"/></svg>';
+        a.addEventListener('click', () => travelTo(target));
+        // Hovering either the arrow or its hex lights both, so it reads as one
+        // control rather than two things that happen to be near each other.
+        a.addEventListener('mouseenter', () => target.el.classList.add('aimed'));
+        a.addEventListener('mouseleave', () => target.el.classList.remove('aimed'));
+        target.el.addEventListener('mouseenter', () => a.classList.add('aimed'));
+        target.el.addEventListener('mouseleave', () => a.classList.remove('aimed'));
+
+        $map.appendChild(a);
+        $arrows.push(a);
+        requestAnimationFrame(() => a.classList.add('in'));
+    }
+}
 
 // ── one tile on screen ──────────────────────────────────────────────────
 function addTile(q, r, hex, role) {
@@ -111,8 +207,10 @@ function travelTo(tile) {
 
     describe(tile.hex);
     offerChoices();
-    centreOn(tile);
-    cull();
+    renderArrows();
+    moveMarker(tile);
+    // Camera follows once the marker has arrived — see MARKER_LEAD.
+    setTimeout(() => { centreOn(tile); cull(); }, MARKER_LEAD);
 }
 
 // Always three choices — but two of them are often hexes that already exist.
@@ -212,10 +310,14 @@ export async function start(dbUrl) {
 export function reset() {
     $map.innerHTML = '';
     occupied.clear();
+    $arrows = [];
+    makeMarkers();
     const first = addTile(0, 0, makeHex(biomes, null), 'current');
     current = first;
     describe(first.hex);
     offerChoices();
+    renderArrows();
+    moveMarker(first);
     centreOn(first);
 }
 

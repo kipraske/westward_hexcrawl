@@ -26,11 +26,12 @@
   h1 { font-size:1.15rem; margin:0; letter-spacing:.06em; font-weight:600; }
   header .hint { color:var(--dim); font-size:.78rem; font-style:italic; }
   header button {
-    margin-left:auto; font:inherit; font-size:.78rem; padding:.3rem .8rem;
+    font:inherit; font-size:.78rem; padding:.3rem .8rem;
     background:transparent; color:var(--dim); border:1px solid var(--line);
     border-radius:2px; cursor:pointer;
   }
   header button:hover { color:var(--ink); border-color:var(--dim); }
+  #marker { margin-left:auto; }
 
   /* ── the board ─────────────────────────────────────────────────────── */
   #stage { position:absolute; inset:0; overflow:hidden; }
@@ -68,6 +69,62 @@
      hex went nearly black. Two gentler knobs instead of three harsh ones. */
   .hex.visited { filter:grayscale(.3) brightness(.82); opacity:.85; z-index:0; }
   .hex.visited .label { opacity:.75; }
+
+  /* ── the marker: two implementations, one visible at a time ───────────
+     A clip-path clips border and box-shadow along with everything else, so
+     the "ring" option cannot be a border. It's a second hex sitting behind
+     the current one, slightly larger, showing as a rim around the edge.
+     (+10px of width needs +11.5px of height to stay the same hex: the
+     aspect ratio is 2/√3.)                                                */
+  .ring {
+    position:absolute; z-index:1; opacity:0; pointer-events:none;
+    width:calc(var(--hex-w) + 10px); height:calc(var(--hex-h) + 11.5px);
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background:var(--accent);
+    transform:translate(-50%,-50%);
+    transition:left .34s cubic-bezier(.3,.8,.3,1), top .34s cubic-bezier(.3,.8,.3,1), opacity .3s;
+  }
+  body.marker-ring .ring.placed { opacity:1; }
+
+  .pawn {
+    position:absolute; z-index:3; opacity:0; pointer-events:none;
+    width:42px; height:56px;
+    /* -62% rather than -50% so the base sits on the hex centre and the piece
+       reads as standing on the tile instead of floating in it. */
+    transform:translate(-50%,-62%);
+    transition:left .34s cubic-bezier(.35,1.3,.5,1), top .34s cubic-bezier(.35,1.3,.5,1), opacity .3s;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.75));
+  }
+  body.marker-pawn .pawn.placed { opacity:1; }
+  .pawn svg { width:100%; height:100%; }   /* colours live in the SVG itself */
+  /* The panel already names the biome you're standing in, so the label on the
+     current hex is redundant — the pawn can have the space. */
+  body.marker-pawn .hex.current .label { opacity:0; }
+
+  .arrow {
+    position:absolute; z-index:3; width:32px; height:24px;
+    background:none; border:none; padding:0; cursor:pointer; opacity:0;
+    transform:translate(-50%,-50%) rotate(var(--angle)) scale(.4);
+    transition:transform .3s cubic-bezier(.2,.9,.3,1.4), opacity .3s, filter .2s;
+  }
+  .arrow.in { transform:translate(-50%,-50%) rotate(var(--angle)) scale(1); opacity:.7; }
+  .arrow.in:hover, .arrow.in.aimed {
+    transform:translate(-50%,-50%) rotate(var(--angle)) scale(1.22); opacity:1;
+    filter:drop-shadow(0 0 5px rgba(255,244,214,.95));
+  }
+  /* Dark arrows, as asked — but they sit ON the choice hex, whose background
+     ranges from Cavern's near-black to Frozen Lands' pale blue. Plain black
+     would disappear on half the biomes, so each arrow is drawn twice: a thick
+     pale stroke underneath as a halo, a near-black stroke on top. Legible on
+     anything. */
+  .arrow svg { width:100%; height:100%; fill:none;
+               stroke-linecap:round; stroke-linejoin:round; }
+  .arrow .halo { stroke:rgba(246,240,224,.8); stroke-width:5.4; }
+  .arrow .line { stroke:#17120c; stroke-width:2.4; }
+  .arrow:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* Hovering an arrow lights its hex and vice versa. */
+  .hex.choice.aimed { transform:translate(-50%,-50%) scale(1.07); filter:brightness(1.22); }
 
   /* ── biome art ─────────────────────────────────────────────────────────
      Placeholders. To use a real image for a biome, replace that one rule's
@@ -124,6 +181,7 @@
 <header>
   <h1>Westward</h1>
   <span class="hint">choose a hex to the west</span>
+  <button id="marker" type="button">Marker: pawn</button>
   <button id="reset" type="button">New journey</button>
 </header>
 
@@ -137,6 +195,17 @@ import { start, reset } from './map.js';
 
 const $status = document.getElementById('status');
 document.getElementById('reset').addEventListener('click', reset);
+
+// A/B the two ways of showing where you are. Both markers are always in the
+// DOM; this only flips which one CSS reveals, so switching is instant and
+// keeps your position.
+const $marker = document.getElementById('marker');
+document.body.className = 'marker-pawn';
+$marker.addEventListener('click', () => {
+  const pawn = document.body.classList.contains('marker-pawn');
+  document.body.className = pawn ? 'marker-ring' : 'marker-pawn';
+  $marker.textContent = `Marker: ${pawn ? 'ring' : 'pawn'}`;
+});
 
 try {
   await start();
