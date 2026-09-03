@@ -132,21 +132,21 @@
      with no cropping. Swap any one of these for a raster image and nothing
      else needs to change — the class names come from the page titles via
      biomeSlug() in map.js.                                                 */
-  .plains                { background:url(art/plains.svg) center/cover; }
-  .temperate-grasslands  { background:url(art/temperate-grasslands.svg) center/cover; }
-  .tropical-grassland    { background:url(art/tropical-grassland.svg) center/cover; }
-  .frozen-lands          { background:url(art/frozen-lands.svg) center/cover; }
-  .swamp                 { background:url(art/swamp.svg) center/cover; }
-  .swamps                { background:url(art/swamps.svg) center/cover; }
-  .cavern                { background:url(art/cavern.svg) center/cover; }
-  .desert                { background:url(art/desert.svg) center/cover; }
-  .shadowy-desert        { background:url(art/shadowy-desert.svg) center/cover; }
-  .flame-scorched-desert { background:url(art/flame-scorched-desert.svg) center/cover; }
-  .forest                { background:url(art/forest.svg) center/cover; }
-  .enchanted-forest      { background:url(art/enchanted-forest.svg) center/cover; }
-  .haunted-forest        { background:url(art/haunted-forest.svg) center/cover; }
-  .jungle                { background:url(art/jungle.svg) center/cover; }
-  .mountains             { background:url(art/mountains.svg) center/cover; }
+  .plains                { background:url(assets/art/plains.svg) center/cover; }
+  .temperate-grasslands  { background:url(assets/art/temperate-grasslands.svg) center/cover; }
+  .tropical-grassland    { background:url(assets/art/tropical-grassland.svg) center/cover; }
+  .frozen-lands          { background:url(assets/art/frozen-lands.svg) center/cover; }
+  .swamp                 { background:url(assets/art/swamp.svg) center/cover; }
+  .swamps                { background:url(assets/art/swamps.svg) center/cover; }
+  .cavern                { background:url(assets/art/cavern.svg) center/cover; }
+  .desert                { background:url(assets/art/desert.svg) center/cover; }
+  .shadowy-desert        { background:url(assets/art/shadowy-desert.svg) center/cover; }
+  .flame-scorched-desert { background:url(assets/art/flame-scorched-desert.svg) center/cover; }
+  .forest                { background:url(assets/art/forest.svg) center/cover; }
+  .enchanted-forest      { background:url(assets/art/enchanted-forest.svg) center/cover; }
+  .haunted-forest        { background:url(assets/art/haunted-forest.svg) center/cover; }
+  .jungle                { background:url(assets/art/jungle.svg) center/cover; }
+  .mountains             { background:url(assets/art/mountains.svg) center/cover; }
 
   /* ── the panel ─────────────────────────────────────────────────────── */
   #panel {
@@ -192,7 +192,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-wasm.js"></script>
 <script type="module">
-import { start, reset } from './map.js';
+import { start, reset } from './assets/map.js';
 
 const $status = document.getElementById('status');
 document.getElementById('reset').addEventListener('click', reset);

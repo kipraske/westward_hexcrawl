@@ -216,7 +216,13 @@ function buildHex(biomes, previous) {
 // Rather than trust a header, sniff the bytes. Gzip always begins 1f 8b;
 // a SQLite file always begins "SQLite format 3". They can't be confused, so
 // this works on any host without configuration.
-export async function open(url = "hexcrawl.db.gz") {
+// The default is built from import.meta.url, NOT written as a bare relative
+// string. fetch() resolves relative URLs against the DOCUMENT, so plain
+// "hexcrawl.db.gz" would look in the site root even though this module lives
+// in assets/ — and it would have kept working right up until the moment the
+// file moved, then 404'd with nothing pointing at the cause. import.meta.url
+// is the module's own address, so the path is relative to this file.
+export async function open(url = new URL("hexcrawl.db.gz", import.meta.url)) {
     const SQL = await initSqlJs({
         locateFile: f => `https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/${f}`
     });

@@ -17,20 +17,28 @@ little learning project. Take that as you will.
 
 ## What's here
 
-| path | what it is |
-|---|---|
-| `index.html` | the page: markup, biome art, panel |
-| `app.js` | the generator; every tunable number is at the top |
-| `map.js` | hex geometry, rendering, travel |
-| `make_art.py` | draws the 15 biome tiles; re-run after editing a motif |
-| `art/*.svg` | the tiles, 59 KB for all fifteen |
-| `hexcrawl.db.gz` | the shipped artifact, 855 KB (44% of raw) |
-| `build_db.sh` | vacuum + gzip — **run after any data change** |
-| `schema.sql` | the six-table schema, reasoning for each decision in comments |
-| `queries/near_hex.sql` | debugging tool, not app code — "why is that page linked to a swamp?" |
-| `hexcrawl.db` | the built database, 1.9 MB |
-| `import/import_btt.py` | parses the corpus into the database; re-runnable |
-| `import/btt/` | 246 source JSON files |
+Two directories, split by one question: **does the browser download it?**
+
+```
+index.html              the page — must stay at the root for GitHub Pages
+assets/                 everything the browser fetches
+  app.js                the generator; every tunable number is at the top
+  map.js                hex geometry, rendering, travel
+  art/*.svg             15 biome tiles, 62 KB for all of them
+  hexcrawl.db.gz        the shipped database, 855 KB (44% of raw)
+tools/                  everything that builds those, shipped to nobody
+  schema.sql            the six-table schema, reasoning in the comments
+  import_btt.py         parses the corpus into the database; re-runnable
+  btt/                  246 source JSON files
+  make_art.py           draws the biome tiles
+  build_db.sh           vacuum + gzip — run after any data change
+  hexcrawl.db           working database, 1.9 MB — a build artefact, not served
+  queries/near_hex.sql  debugging tool — "why is that page linked to a swamp?"
+```
+
+`tools/hexcrawl.db` is deliberately not at the root: the browser only ever
+fetches `assets/hexcrawl.db.gz`, so the uncompressed file is an intermediate
+that sits with the things that produce it.
 
 ## Running it
 
@@ -43,26 +51,35 @@ don't work over `file://`. The page tells you so if you try.
 
 ## Deploying
 
-GitHub Pages: push, then Settings → Pages → deploy from branch. No
-configuration. Everything is static; the only external request is the sql.js
+GitHub Pages: push, then Settings → Pages → deploy from branch, root. No
+configuration — `index.html` stays at the root for exactly this reason. Pages
+also serves `tools/`, which is harmless since nothing links to it; moving the
+site into `docs/` would hide it, at the cost of a settings change. Everything is static; the only external request is the sql.js
 WASM binary from jsDelivr (322 KB, brotli). First load is ~1.2 MB total and
 cached after; every roll thereafter is local and works offline.
 
 ## Rebuilding the data
 
 ```sh
-rm -f hexcrawl.db
-sqlite3 hexcrawl.db < schema.sql
-python3 import/import_btt.py      # ~0.25s
-./build_db.sh                     # regenerate the .gz the site serves
+rm -f tools/hexcrawl.db
+sqlite3 tools/hexcrawl.db < tools/schema.sql
+python3 tools/import_btt.py       # ~0.25s
+./tools/build_db.sh               # regenerate the .gz the site serves
+```
+
+Art is a separate chain, only needed if you change a motif:
+
+```sh
+python3 tools/make_art.py         # redraws assets/art/*.svg
 ```
 
 The importer clears existing rows first, so re-running is safe. It prints a
 verification report: row counts, tree depth, attribution coverage, and every
 anomaly it skipped or noticed.
 
-Don't skip `build_db.sh`. The site serves `hexcrawl.db.gz`, not `hexcrawl.db`
-— miss it and the page keeps serving the previous data with no error anywhere.
+Don't skip `build_db.sh`. The site serves `assets/hexcrawl.db.gz`, never
+`tools/hexcrawl.db` — miss it and the page keeps serving the previous data
+with no error anywhere.
 
 ## The generator
 
@@ -76,7 +93,7 @@ Content      60% a prompt from the biome page
 Monsters     ~30%, emergent — see below
 ```
 
-All four numbers are constants at the top of `app.js`.
+All four numbers are constants at the top of `assets/app.js`.
 
 Measured over 20,000 generated hexes: origins 60.2 / 30.2 / 9.6, monsters
 29.9%, every biome within 0.5% of its weight.
@@ -143,7 +160,7 @@ data before building the table.
 that page A listed page B, and only **34.5% of links are reciprocated** — the
 authors linked whichever direction occurred to them. Forest lists 12 pages; 33
 other pages list Forest. Traversing arrows as stored misses Bears, Wolves, and
-Spiders. Both `queries/near_hex.sql` and the generator union the edge list with
+Spiders. Both `tools/queries/near_hex.sql` and the generator union the edge list with
 its own reverse. Whether a graph is directed is a fact about your question, not about
 your table.
 
@@ -189,7 +206,7 @@ at 3 choices for 200 consecutive moves.
 **Biome art is generated, not downloaded.** Fifteen raster tiles would have
 added several hundred KB to a project budgeted at 855 KB, plus a second
 licence and attribution chain on top of BehindTheTables. And "simple and
-drawn" *is* line art, which is what SVG natively is — so `make_art.py` draws
+drawn" *is* line art, which is what SVG natively is — so `tools/make_art.py` draws
 them: pines, grass tufts, dunes, reeds, ridged peaks, ice shards, dead trees.
 All fifteen come to **59 KB**. Each biome seeds its RNG from its own name, so
 re-running produces byte-identical files and a regenerate doesn't churn the
@@ -213,7 +230,7 @@ sight. The limit is `max(10 hexes, half the viewport + 3 hexes)`, verified at
 byte; others (verified: `python -m http.server`) don't. Decompressing
 unconditionally breaks on the first, not decompressing breaks on the second,
 and which you get depends on the host — so you'd find out only after
-deploying. `app.js` checks for the gzip magic bytes `1f 8b` and inflates only
+deploying. `assets/app.js` checks for the gzip magic bytes `1f 8b` and inflates only
 if needed, then asserts the result begins `SQLite format 3`.
 
 ## Data quirks that will bite

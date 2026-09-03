@@ -3,7 +3,7 @@
 
 -- near_hex.sql — "what did the authors say goes with this hex?"
 --
---     sqlite3 -box hexcrawl.db < queries/near_hex.sql   (from the project root)
+--     sqlite3 -box tools/hexcrawl.db < tools/queries/near_hex.sql
 --
 -- Not used by the app. app.js does its own one-hop traversal in linkedPages().
 -- This is the tool for interrogating that traversal by hand: when a generated

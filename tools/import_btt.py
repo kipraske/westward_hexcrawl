@@ -2,7 +2,7 @@
 """
 import_btt.py — load the BehindTheTables JSON corpus into hexcrawl.db
 
-    python3 import_btt.py
+    python3 tools/import_btt.py
 
 Reads every btt/table_*.json and writes into the tables defined by schema.sql.
 Safe to run repeatedly: it clears the old rows first (see wipe() below), so
@@ -26,12 +26,13 @@ import re
 import sqlite3
 import sys
 
-# This script lives in import/ but the database belongs at the project root,
-# next to index.html, because that is what the site serves. Both paths are
-# derived from __file__ rather than the working directory, so the script
-# behaves the same whether you run it from here or from the project root.
+# hexcrawl.db is a BUILD ARTEFACT, not something the site serves — the browser
+# only ever fetches assets/hexcrawl.db.gz, which build_db.sh produces from it.
+# So it lives here in tools/ alongside its source data. Both paths derive from
+# __file__ rather than the working directory, so the script behaves the same
+# whichever directory you run it from.
 HERE      = os.path.dirname(os.path.abspath(__file__))
-DB_PATH   = os.path.normpath(os.path.join(HERE, os.pardir, "hexcrawl.db"))
+DB_PATH   = os.path.join(HERE, "hexcrawl.db")
 JSON_GLOB = os.path.join(HERE, "btt", "table_*.json")
 
 

@@ -2,7 +2,7 @@
 """
 make_art.py — draw the 15 biome tiles as SVG line art.
 
-    python3 make_art.py        # writes art/*.svg
+    python3 tools/make_art.py        # writes assets/art/*.svg
 
 Hand-drawn hex-map style: ink strokes over a colour wash, the way someone
 sketching their own map would do it. Generated rather than hand-authored so a
@@ -19,7 +19,11 @@ import os
 import random
 
 W, H = 200, 231
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art")
+# This script lives in tools/ but draws into assets/, because the tiles are
+# something the browser downloads. Derived from __file__ so it doesn't matter
+# what directory you run it from.
+OUT = os.path.normpath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), os.pardir, "assets", "art"))
 
 
 # ── motif helpers ───────────────────────────────────────────────────────
